@@ -1,0 +1,7 @@
+#!/bin/bash
+
+SOURCE=`dirname $0` > /dev/null
+
+# run python tests
+pushd $SOURCE/..
+python -m unittest -v minicf.tests

@@ -1,0 +1,75 @@
+#!/bin/bash 
+# build the buildpack files and create an iamge
+#
+# Use: build-image buildpack 
+#
+# The image will be built and committed to docker with
+# at repository $BUILDPACK with tag latest
+#
+# 1. Build the context for docker build in $TMP/$BUILDPACK   
+#
+# ./Dockerfile
+# ./bin
+# ./bin/build        
+# ./bin/compile
+# ./bin/detect
+# ./bin/release
+# ./minicf
+# + any files from the buildpack itself
+#
+# 2. run docker build with $TMP/$BUILDPACK as the context
+#    to build and commit the image $BUILDPACK
+# 
+#    This will run detect/compile/release from $BUILDPACK/bin
+#    If there is a $BUILDPACK/Dockerfile it will be used to
+#    build the image. Otherwise config/Dockerfile is used. Using
+#    this you can specify a default base image specific to the buildpack,
+#    or rely on the basic image prepared by minicf
+#
+# 3. clean up
+#
+# If all steps run successfully
+
+# set directories
+SOURCE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+BUILDPACK_DIR=/opt/minicf
+BUILDPACK=$1
+TMP=`mktemp -d /tmp/minicf.XXXXXXXX`
+DIST=$TMP/$BUILDPACK
+
+# create staging directory
+cd $TMP
+mkdir -p $BUILDPACK/bin
+mkdir -p $DIST
+
+# get relevant files from minicf itself
+cd $SOURCE
+cp build $TMP/$BUILDPACK/bin/.
+cp -r ../minicf $TMP/$BUILDPACK/.
+
+# get buildpack files
+cd $BUILDPACK_DIR/$BUILDPACK
+cp -r . $TMP/$BUILDPACK/.
+
+# use Dockerfile from stack or from minicf otherwise
+cd $TMP/$BUILDPACK
+if [ -f ./Dockerfile ]; 
+then
+  :
+else
+  cp $SOURCE/../config/Dockerfile .
+fi
+
+# make sure scripts can be executed
+chmod +x bin/*
+
+# build the image
+cd $TMP
+docker build -t $BUILDPACK $BUILDPACK
+
+# cleanup
+if [ "$2" != "--debug" ]; then
+	rm -rf $TMP
+else
+   echo Buildpack files are in $TMP
+fi

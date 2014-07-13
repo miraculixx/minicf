@@ -1,0 +1,10 @@
+#!/bin/bash
+#
+# This prepares the application image. It is run by
+# the Dockerfile *within* the container
+# run detect, compile, release
+cd /bin
+if detect; then
+  compile /app
+  release /app
+fi

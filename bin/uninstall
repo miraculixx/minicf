@@ -1,0 +1,15 @@
+#!/bin/bash
+
+INSTALL_DIR=/usr/local/minicf
+HOME_DIR=/home
+GIT_HOME=/opt/git
+
+# uninstall command, pip and packages
+rm /usr/local/bin/minicf
+pip uninstall -y -r $INSTALL_DIR/requirements.txt
+
+#remove git
+deluser git
+rm -rf $HOME_DIR/git
+rm -rf $GIT_HOME
+rm -rf /opt/minicf

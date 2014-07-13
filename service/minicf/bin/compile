@@ -1,0 +1,23 @@
+#!/bin/bash
+# source https://devcenter.heroku.com/articles/buildpack-api#buildpack-api
+#
+# install all the required basic components for minicf to work (within
+# a container)
+#
+# Use: bin/compile BUILD_DIR CACHE_DIR ENV_DIR
+#
+# This script performs the buildpack transformation. BUILD_DIR will be
+# the location of the app and CACHE_DIR will be a location the buildpack
+# can use to cache build artifacts between builds.
+
+install() {
+  apt-get -q -y install $@
+}
+
+# avoid depconf error messages
+# see https://github.com/phusion/baseimage-docker/issues/58
+PATH=/usr/bin:/bin:/usr/sbin:/sbin
+echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+
+apt-get -q -y update
+install python python-dev python-distribute python-pip python-virtualenv 

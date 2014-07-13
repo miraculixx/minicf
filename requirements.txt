@@ -1,0 +1,5 @@
+Fabric==1.9.0
+python-digitalocean==0.7.1
+docker-py==0.3.2
+sh==1.09
+pymongo==2.7.1

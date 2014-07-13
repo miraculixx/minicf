@@ -1,0 +1,6 @@
+#!/bin/bash
+
+SOURCE=`dirname $0` > /dev/null
+
+# start command for minicf controller
+fab -f "$SOURCE/../minicf/ctl.py" $@

@@ -1,0 +1,3 @@
+This is the basic buildpack for MiniCF. It prepares the basic image that
+all other stacks can be based off. It works as any other buildpack.
+ 

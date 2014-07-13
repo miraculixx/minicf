@@ -1,0 +1,7 @@
+#!/usr/bin/env python
+# source https://devcenter.heroku.com/articles/buildpack-api#buildpack-api
+# 
+# Use: bin/release BUILD_DIR
+#
+# This script returns the YML configuration for this stack
+print ""
