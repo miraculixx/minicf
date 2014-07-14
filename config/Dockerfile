@@ -1,7 +1,9 @@
 # basic stack Dockerfile
 # 
 # this is used to build the docker image for an application
-FROM minicf/minicf
+FROM stack/minicf
 MAINTAINER ps@novapp.ch
-ADD ./bin /bin 
-RUN /bin/build
+ADD ./bin /bin
+ADD ./app /app
+ADD ./log /log 
+CMD /bin/start

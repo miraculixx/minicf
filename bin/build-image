@@ -1,7 +1,7 @@
 #!/bin/bash 
-# build the buildpack files and create an iamge
+# build the buildpack files and create an image
 #
-# Use: build-image buildpack 
+# Use: build-image buildpack  
 #
 # The image will be built and committed to docker with
 # at repository $BUILDPACK with tag latest
@@ -17,7 +17,7 @@
 # ./minicf
 # + any files from the buildpack itself
 #
-# 2. run docker build with $TMP/$BUILDPACK as the context
+# 3. run docker build with $TMP/$BUILDPACK as the context
 #    to build and commit the image $BUILDPACK
 # 
 #    This will run detect/compile/release from $BUILDPACK/bin
@@ -26,12 +26,13 @@
 #    this you can specify a default base image specific to the buildpack,
 #    or rely on the basic image prepared by minicf
 #
-# 3. clean up
+# 4. clean up
 #
 # If all steps run successfully
 
 # set directories
-SOURCE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SCRIPT=`realpath $0`
+SOURCE=`dirname $SCRIPT`
 BUILDPACK_DIR=/opt/minicf
 BUILDPACK=$1
 TMP=`mktemp -d /tmp/minicf.XXXXXXXX`
@@ -40,12 +41,19 @@ DIST=$TMP/$BUILDPACK
 # create staging directory
 cd $TMP
 mkdir -p $BUILDPACK/bin
+mkdir -p $BUILDPACK/app
+mkdir -p $BUILDPACK/minicf
 mkdir -p $DIST
 
 # get relevant files from minicf itself
 cd $SOURCE
 cp build $TMP/$BUILDPACK/bin/.
-cp -r ../minicf $TMP/$BUILDPACK/.
+cp start $TMP/$BUILDPACK/bin/.
+# FIXME: we should use a source tar or something 
+cp -r ../minicf $TMP/$BUILDPACK/minicf/.
+cp -r ../setup.py $TMP/$BUILDPACK/minicf/.
+cp ../requirements.txt $TMP/$BUILDPACK/minicf/.
+cp ../README $TMP/$BUILDPACK/minicf/.
 
 # get buildpack files
 cd $BUILDPACK_DIR/$BUILDPACK
@@ -63,12 +71,11 @@ fi
 # make sure scripts can be executed
 chmod +x bin/*
 
-# build the image
-cd $TMP
-docker build -t $BUILDPACK $BUILDPACK
-
 # cleanup
 if [ "$2" != "--debug" ]; then
+	# build the image
+	cd $TMP
+	docker build -t $BUILDPACK $BUILDPACK
 	rm -rf $TMP
 else
    echo Buildpack files are in $TMP

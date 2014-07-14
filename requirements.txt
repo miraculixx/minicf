@@ -3,3 +3,5 @@ python-digitalocean==0.7.1
 docker-py==0.3.2
 sh==1.09
 pymongo==2.7.1
+pycrypto==2.6.1
+ecdsa==0.11

@@ -19,5 +19,19 @@ install() {
 PATH=/usr/bin:/bin:/usr/sbin:/sbin
 echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 
+# install dependencies
 apt-get -q -y update
 install python python-dev python-distribute python-pip python-virtualenv 
+install realpath
+pip install fabric
+
+# create minicf virtualenv
+virtualenv /minicf/env
+source /minicf/env/bin/activate
+pip install -r /minicf/requirements.txt
+cd /minicf && python setup.py build
+cd /minicf && python setup.py install 
+
+cd /minicf
+python setup.py build 
+python setup.py install

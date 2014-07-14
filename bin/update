@@ -1,0 +1,17 @@
+#!/bin/bash
+
+SCRIPT=`realpath $0`
+SOURCE=`dirname $SCRIPT`
+PATH=$SOURCE:$PATH
+BUILDPACK_DIR=/opt/minicf
+
+# start command for minicf
+source $SOURCE/../env/bin/activate
+cd $SOURCE/..
+pip uninstall -y -q minicf
+python setup.py build
+python setup.py install
+
+# refresh build packages
+cp -r $SOURCE/../stack $BUILDPACK_DIR/.
+cp -r $SOURCE/../service $BUILDPACK_DIR/.

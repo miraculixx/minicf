@@ -3,11 +3,9 @@ Created on Jul 13, 2014
 
 @author: patrick
 '''
-from os import path
+from fabric.operations import local
+from minicf.shutil import sh, mkdir, cd, git
 from pymongo.mongo_client import MongoClient
-from shutil import sh, mkdir, cd, git
-from uuid import uuid4
-import docker
 import os
 import settings
 
@@ -15,6 +13,7 @@ import settings
 hostname = sh('hostname')
 tar = sh('tar')
 cp = sh('cp')
+
 
 class MiniCFController(object):
     """
@@ -40,6 +39,7 @@ class MiniCFController(object):
         """
         login the user onto the service
         """
+        self.user = 'demo'
         return True 
     
     def create_app(self, user, appname, manifest):
@@ -56,7 +56,7 @@ class MiniCFController(object):
         """
         try:
             gituri = self.create_git(user, appname)
-            dockerid = self.create_container(user, appname, manifest)
+            dockerid = self.create_app_image(user, appname, manifest)
         except:
             pass
         else:
@@ -90,13 +90,24 @@ class MiniCFController(object):
         with cd(path):
             git('--bare', 'init')
         return self.gituri(user, appname)
-            
-    def create_container(self, user, appname, manifest):
+    
+    def create_buildpack_image(self, buildpack):
         """
-        create a docker container 
-        """
-        docker = sh('docker')        
+        create a docker image for the buildpack 
+        """ 
+        with cd(settings.BIN_DIR):
+            local('build-image %s' % buildpack)
             
+    def create_app_image(self, user, appname, manifest):
+        """
+        create a docker image for the app 
+        """ 
+        print "hello"
+        app = '%s/%s' % (user, appname)
+        with cd(settings.BIN_DIR):
+            local('build-app %s %s' % (app, 'stack/django'))
+        
+                
     def gituri(self, user, appname):
         """
         return the git uri of a particular app

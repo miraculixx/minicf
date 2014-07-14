@@ -3,6 +3,7 @@
 INSTALL_DIR=/usr/local/minicf
 HOME_DIR=/home
 BUILDPACK_DIR=/opt/minicf
+GIT_HOME=/opt/git
 
 install() {
   apt-get -q -y install $@
@@ -33,12 +34,19 @@ docker pull ubuntu -t 14.04
 # basic setup for minicf
 install nginx
 install mongodb mongodb-server mongodb-clients
-install python-pip 
-install python-virtualenv
+install python python-dev python-distribute python-pip python-virtualenv
+install realpath
+install git
 sudo ln -fs $INSTALL_DIR/bin/minicf /usr/local/bin/minicf
 sudo ln -fs $INSTALL_DIR/bin/minicfctl /usr/local/bin/minicfctl
 sudo ln -fs $INSTALL_DIR/bin/minicfctl /usr/local/bin/mctl
+
+# create minicf virtualenv
+virtualenv $INSTALL_DIR/env
+source $INSTALL_DIR/env/bin/activate
 pip install -r $INSTALL_DIR/requirements.txt
+cd $INSTALL_DIR && python setup.py build
+cd $INSTALL_DIR && python setup.py install 
 mkdir -p $BUILDPACK_DIR/stack
 mkdir -p $BUILDPACK_DIR/service
 cp -r $INSTALL_DIR/stack $BUILDPACK_DIR/.
@@ -51,6 +59,7 @@ adduser --gecos "" --disabled-password git
 mkdir $HOME_DIR/git/.ssh
 ## -- allow minicf to login and use git via .ssh
 cat $INSTALL_DIR/config/ssh/*.pub >> $HOME_DIR/git/.ssh/authorized_keys 
+mkdir $GIT_HOME
 
 #build the stack/minicf image, which is our boot image
-/usr/local/minicf/bin/build-image stack/minicf 
+#/usr/local/minicf/bin/build-image stack/minicf 
