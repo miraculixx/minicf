@@ -1,9 +1,10 @@
 """
 Controller fabfile
 """
+from controller import MiniCFController
 from fabric.decorators import task
 from fabric.operations import local
-from controller import MiniCFController
+from fabric.context_managers import settings
     
 @task
 def cleanup():
@@ -11,9 +12,10 @@ def cleanup():
     remove containers and images for good
     """
     # remove containers
-    local('docker ps -a | cut -d' ' -f1  | xargs docker rm')
-    # remove images, but leave ubuntu there
-    local('docker images | grep -v ubuntu | cut -c41-50 | tail -n+2 | xargs docker rmi')
+    with settings(warn_only=True):
+        local("docker ps -a | tail -n+2 | cut -d' ' -f1  | xargs docker rm")
+        # remove images, but leave ubuntu there
+        local('docker images | grep -v ubuntu | cut -c41-50 | tail -n+2 | xargs docker rmi')
 
 @task(alias='build-image')
 def buildimage(buildpack=None):
@@ -22,6 +24,15 @@ def buildimage(buildpack=None):
     """
     ctl = MiniCFController()
     ctl.create_buildpack_image(buildpack)
+
+@task(alias='build-stack')
+def buildstack(image=None, buildpacks=None):
+    """
+    build a stack from multiple buildpacks (bp1;bp2;bp3)
+    """
+    ctl = MiniCFController()
+    buildpacks = buildpacks.split('+')
+    ctl.create_combined_image(image, buildpacks)
     
 @task(alias='build-app')
 def buildapp(user=None, appname=None, manifest=None):

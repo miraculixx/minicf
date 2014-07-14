@@ -1,7 +1,7 @@
 #!/bin/bash 
 # build the buildpack files and create an image
 #
-# Use: build-image buildpack  
+# Use: build-image image buildpack [buildpack [...]]
 #
 # The image will be built and committed to docker with
 # at repository $BUILDPACK with tag latest
@@ -34,6 +34,16 @@
 SCRIPT=`realpath $0`
 SOURCE=`dirname $SCRIPT`
 BUILDPACK_DIR=/opt/minicf
+IMAGE=$1
+# that's the basic to build from, except if the builpack provides
+# its own Dockerfile
+FROM=stack/minicf
+
+# process buildpacks one at a time
+shift
+while (("$#")); do
+
+# get buildpack and create temp directory
 BUILDPACK=$1
 TMP=`mktemp -d /tmp/minicf.XXXXXXXX`
 DIST=$TMP/$BUILDPACK
@@ -43,6 +53,7 @@ cd $TMP
 mkdir -p $BUILDPACK/bin
 mkdir -p $BUILDPACK/app
 mkdir -p $BUILDPACK/minicf
+mkdir -p $BUILDPACK/log
 mkdir -p $DIST
 
 # get relevant files from minicf itself
@@ -63,9 +74,15 @@ cp -r . $TMP/$BUILDPACK/.
 cd $TMP/$BUILDPACK
 if [ -f ./Dockerfile ]; 
 then
+  # we use the buildpacks dockerfile, unchanged
+  # NOTE: this WILL break the chain of buildpacks
+  # if there are multiple ones provided
   :
 else
-  cp $SOURCE/../config/Dockerfile .
+  # use from minicf default, and apply the previously
+  # built IMAGE 
+  cp $SOURCE/../config/stack_Dockerfile ./Dockerfile
+  sed -i "s!FROM.*!FROM $FROM!g" ./Dockerfile
 fi
 
 # make sure scripts can be executed
@@ -75,8 +92,17 @@ chmod +x bin/*
 if [ "$2" != "--debug" ]; then
 	# build the image
 	cd $TMP
-	docker build -t $BUILDPACK $BUILDPACK
+	docker build -t $IMAGE $BUILDPACK
 	rm -rf $TMP
+	# the next buildpack (if any) will be added to the image we're just
+  	# building
+  	FROM=$IMAGE
 else
    echo Buildpack files are in $TMP
+   # ignore --debug
+   shift
 fi
+
+shift
+
+done

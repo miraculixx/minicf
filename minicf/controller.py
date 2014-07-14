@@ -96,8 +96,15 @@ class MiniCFController(object):
         create a docker image for the buildpack 
         """ 
         with cd(settings.BIN_DIR):
-            local('build-image %s' % buildpack)
+            local('build-image %s %s' % (buildpack, buildpack))
             
+    def create_combined_image(self, image, buildpacks):
+        """
+        create a combined image for several buildpacks
+        """
+        with cd(settings.BIN_DIR):
+            local('build-image %s %s' % (image, " ".join(buildpacks)))
+                    
     def create_app_image(self, user, appname, manifest):
         """
         create a docker image for the app 

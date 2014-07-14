@@ -48,8 +48,8 @@ git clone -l $APP_DIR/$APP app
 
 # use the default app Dockerfile, and change the FROM image
 cd $TMP/$APP
-cp $SOURCE/../config/Dockerfile .
-sed -i "s/FROM.*/FROM $IMAGE/g" ./Dockerfile
+cp $SOURCE/../config/app_Dockerfile ./Dockerfile
+sed -i "s@FROM.*@FROM $IMAGE@g" ./Dockerfile
 
 # make sure scripts can be executed
 chmod +x bin/*
