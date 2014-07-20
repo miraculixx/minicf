@@ -11,6 +11,7 @@ cd $SOURCE/..
 pip uninstall -y -q minicf
 python setup.py build
 python setup.py install
+pip install -r requirements.txt
 
 # refresh build packages
 cp -r $SOURCE/../stack $BUILDPACK_DIR/.

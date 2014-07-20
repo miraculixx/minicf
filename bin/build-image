@@ -87,12 +87,13 @@ fi
 
 # make sure scripts can be executed
 chmod +x bin/*
+chmod +x app/*.sh
 
 # cleanup
 if [ "$2" != "--debug" ]; then
 	# build the image
 	cd $TMP
-	docker build -t $IMAGE $BUILDPACK
+	docker build -t $IMAGE $BUILDPACK  
 	rm -rf $TMP
 	# the next buildpack (if any) will be added to the image we're just
   	# building

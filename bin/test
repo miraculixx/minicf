@@ -4,5 +4,8 @@ SCRIPT=`realpath $0`
 SOURCE=`dirname $SCRIPT`
 
 # run python tests
+PATH=$SOURCE:$PATH
+source $SOURCE/../env/bin/activate
 pushd $SOURCE/..
-python -m unittest -v minicf.tests
+export MINICF_TEST=yes
+python -m unittest -v $1

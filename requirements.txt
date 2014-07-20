@@ -1,3 +1,4 @@
+-f git+https://github.com/miraculixx/minimongo.git@6d933d8ac0be09cc6473074a544b1fa9c981b8b2#egg=minimongo-0.2.9
 Fabric==1.9.0
 python-digitalocean==0.7.1
 docker-py==0.3.2
@@ -5,3 +6,5 @@ sh==1.09
 pymongo==2.7.1
 pycrypto==2.6.1
 ecdsa==0.11
+minimongo==0.2.9
+PyYAML==3.11

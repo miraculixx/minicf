@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# source https://devcenter.heroku.com/articles/buildpack-api#buildpack-api
+# 
+# Use: bin/release BUILD_DIR
+#
+# This script returns the YML configuration for this stack
+cat << EOF
+# report back service configuration  
+docker-run:
+    volume: /var/lib/mysql
+    expose: 3306
+    command: /app/run.sh 
+minicf-config:
+	user: root
+    password: rootroot
+EOF

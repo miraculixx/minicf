@@ -1,13 +1,12 @@
 #!/bin/bash 
 # build the app image
 #
-# Use: build-app app image  
+# Use: build-service service image  
 #
 # The image will be built and committed to docker 
-# at repository app with tag latest. Note app must be the
-# path relative to APP_DIR (which is GIT_HOME), plus .git
+# at repository service with tag latest. 
 # 
-# 1. Create the docker build context for the app   
+# 1. Create the docker build context for the service   
 #
 # ./Dockerfile
 # ./bin
@@ -17,7 +16,7 @@
 #
 # 2. Change the FROM statement in ./Dockerfile to the image given 
 #
-# 3. Build the image and tag it as app
+# 3. Build the image and tag it as service
 #
 # 4. clean up
 #
@@ -35,6 +34,7 @@ IMAGE=$2
 # create staging directory
 cd $TMP
 mkdir -p $APP/bin
+mkdir -p $APP/app
 mkdir -p $APP/log
 mkdir -p $DIST
 
@@ -42,13 +42,9 @@ mkdir -p $DIST
 cd $SOURCE
 cp start $TMP/$APP/bin/.
 
-# get app files
+# use the default service Dockerfile, and change the FROM image
 cd $TMP/$APP
-git clone -l $APP_DIR/$APP app  
-
-# use the default app Dockerfile, and change the FROM image
-cd $TMP/$APP
-cp $SOURCE/../config/app_Dockerfile ./Dockerfile
+cp $SOURCE/../config/service_Dockerfile ./Dockerfile
 sed -i "s@FROM.*@FROM $IMAGE@g" ./Dockerfile
 
 # make sure scripts can be executed
@@ -62,5 +58,5 @@ if [ "$3" != "--debug" ]; then
 	docker build -t $APP $APP  
 	rm -rf $TMP
 else
-   echo App files are in $TMP
+   echo Service files are in $TMP
 fi

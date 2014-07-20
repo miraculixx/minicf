@@ -9,4 +9,11 @@ install() {
   apt-get -q -y install $@
 }
 
-pip install Django
+# this adopted from Dockerfile from https://github.com/tutumcloud/tutum-docker-mysql
+
+# install packages
+apt-get update
+install mysql-server mysql-client pwgen
+
+# remove pre-installed database
+rm -rf /var/lib/mysql/*
