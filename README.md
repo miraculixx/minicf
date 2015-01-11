@@ -3,6 +3,8 @@ minicf
 
 cloudfoundry-like app deployment based on docker
 
+**DISCOUNTINUED** in favor of Jeff Lindsay's excellent [dokku](https://github.com/progrium/dokku). 
+
 
 setup
 =====
