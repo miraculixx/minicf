@@ -5,6 +5,6 @@ docker-py==0.3.2
 sh==1.09
 pymongo==2.7.1
 pycrypto==2.6.1
-ecdsa==0.11
+ecdsa==0.13.3
 minimongo==0.2.9
 PyYAML==3.11
