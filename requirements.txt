@@ -7,4 +7,4 @@ pymongo==2.7.1
 pycrypto==2.6.1
 ecdsa==0.11
 minimongo==0.2.9
-PyYAML==3.11
+PyYAML==5.4
